@@ -14,40 +14,55 @@
 
 Arm::Arm()
 {
-    m_ArmMotorRight.SetInverted( false );
-    m_ArmMotorLeft.SetInverted( true );
-    m_WristMotor.SetInverted( true );
+    //m_ArmMotorRight.SetInverted( false );
+    //m_ArmMotorLeft.SetInverted( true );
+    //m_WristMotor.SetInverted( true );
 
-    m_WristMotor.SetSmartCurrentLimit(20, 40);
-    m_ArmMotorLeftEncoder.SetPositionConversionFactor(  1.0 / ( 20.0 * ( 74.0 / 14.0 ) ) );
-    m_ArmMotorRightEncoder.SetPositionConversionFactor( 1.0 / ( 20.0 * ( 74.0 / 14.0 ) ) );
+    // m_WristMotor.SetSmartCurrentLimit(20, 40);
+    // m_ArmMotorLeftEncoder.SetPositionConversionFactor(  1.0 / ( 20.0 * ( 74.0 / 14.0 ) ) );
+    // m_ArmMotorRightEncoder.SetPositionConversionFactor( 1.0 / ( 20.0 * ( 74.0 / 14.0 ) ) );
 
-    m_ArmMotorLeftEncoder.SetVelocityConversionFactor(  1.0 / ( 60 * 20.0 * ( 74.0 / 14.0 ) ) );
-    m_ArmMotorRightEncoder.SetVelocityConversionFactor( 1.0 / ( 60 * 20.0 * ( 74.0 / 14.0 ) ) );
-
-
-    m_pidControllerLeft.SetP(kP);
-    m_pidControllerLeft.SetI(kI);
-    m_pidControllerLeft.SetD(kD);
-    m_pidControllerLeft.SetIZone(kIz);
-    m_pidControllerLeft.SetFF(kFF);
-    m_pidControllerLeft.SetOutputRange(kMinOutput, kMaxOutput);
-    m_pidControllerLeft.SetSmartMotionMaxVelocity(kMaxVel);
-    m_pidControllerLeft.SetSmartMotionMinOutputVelocity(kMinVel);
-    m_pidControllerLeft.SetSmartMotionMaxAccel(kMaxAcc);
-    m_pidControllerLeft.SetSmartMotionAllowedClosedLoopError(kAllErr);
+    // m_ArmMotorLeftEncoder.SetVelocityConversionFactor(  1.0 / ( 60 * 20.0 * ( 74.0 / 14.0 ) ) );
+    // m_ArmMotorRightEncoder.SetVelocityConversionFactor( 1.0 / ( 60 * 20.0 * ( 74.0 / 14.0 ) ) );
 
 
-    m_pidControllerRight.SetP(kP);
-    m_pidControllerRight.SetI(kI);
-    m_pidControllerRight.SetD(kD);
-    m_pidControllerRight.SetIZone(kIz);
-    m_pidControllerRight.SetFF(kFF);
-    m_pidControllerRight.SetOutputRange(kMinOutput, kMaxOutput);
-    m_pidControllerRight.SetSmartMotionMaxVelocity(kMaxVel);
-    m_pidControllerRight.SetSmartMotionMinOutputVelocity(kMinVel);
-    m_pidControllerRight.SetSmartMotionMaxAccel(kMaxAcc);
-    m_pidControllerRight.SetSmartMotionAllowedClosedLoopError(kAllErr);
+    // m_pidControllerLeft.SetP(kP);
+    // m_pidControllerLeft.SetI(kI);
+    // m_pidControllerLeft.SetD(kD);
+    // m_pidControllerLeft.SetIZone(kIz);
+    // m_pidControllerLeft.SetFF(kFF);
+    // m_pidControllerLeft.SetOutputRange(kMinOutput, kMaxOutput);
+    // m_pidControllerLeft.SetSmartMotionMaxVelocity(kMaxVel);
+    // m_pidControllerLeft.SetSmartMotionMinOutputVelocity(kMinVel);
+    // m_pidControllerLeft.SetSmartMotionMaxAccel(kMaxAcc);
+    // m_pidControllerLeft.SetSmartMotionAllowedClosedLoopError(kAllErr);
+
+    SparkMax m_max{1, SparkMax::MotorType::kBrushless};
+    SparkMaxConfig config{};
+
+    config
+        .Inverted(false)
+        .SetIdleMode(SparkMaxConfig::IdleMode::kBrake);
+    config.encoder
+        .PositionConversionFactor(  1.0 / ( 20.0 * ( 74.0 / 14.0 ) ) )
+        .VelocityConversionFactor(  1.0 / ( 60 * 20.0 * ( 74.0 / 14.0 ) ) );
+    config.closedLoop
+        .SetFeedbackSensor(ClosedLoopConfig::FeedbackSensor::kPrimaryEncoder)
+        .Pid(kP, kI, kD);
+
+    m_max.Configure(config, SparkMax::ResetMode::kResetSafeParameters, SparkMax::PersistMode::kPersistParameters)
+
+
+    // m_pidControllerRight.SetP(kP);
+    // m_pidControllerRight.SetI(kI);
+    // m_pidControllerRight.SetD(kD);
+    // m_pidControllerRight.SetIZone(kIz);
+    // m_pidControllerRight.SetFF(kFF);
+    // m_pidControllerRight.SetOutputRange(kMinOutput, kMaxOutput);
+    // m_pidControllerRight.SetSmartMotionMaxVelocity(kMaxVel);
+    // m_pidControllerRight.SetSmartMotionMinOutputVelocity(kMinVel);
+    // m_pidControllerRight.SetSmartMotionMaxAccel(kMaxAcc);
+    // m_pidControllerRight.SetSmartMotionAllowedClosedLoopError(kAllErr);
 
     // 44 / 18 sprockets
   #if WRIST_USE_MOTOR_ENCODER
@@ -115,9 +130,9 @@ Arm::Arm()
 
 void Arm::initArm()
 {
-    m_ArmMotorRight.SetIdleMode(rev::SparkBase::IdleMode::kBrake);
-    m_ArmMotorLeft.SetIdleMode(rev::SparkBase::IdleMode::kBrake);
-    m_WristMotor.SetIdleMode(rev::SparkBase::IdleMode::kBrake);
+    m_ArmMotorRight.SetIdleMode(SparkBase::IdleMode::kBrake);
+    m_ArmMotorLeft.SetIdleMode(SparkBase::IdleMode::kBrake);
+    m_WristMotor.SetIdleMode(SparkBase::IdleMode::kBrake);
     m_ArmPosition     = arm_position_t::HOLD_START_POSITION;
     m_PrevArmPosition = arm_position_t::HOLD_START_POSITION;
     m_ArmMotorLeftEncoder.SetPosition(  m_ArmEncoder.GetAbsolutePosition() );
@@ -161,9 +176,9 @@ double Arm::getWristEncoderValue()
 void Arm::disableArm()
 {
     // Nice to be able to move the arm/wrist, but will slam down when disabled....
-    m_ArmMotorRight.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
-    m_ArmMotorLeft.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
-    m_WristMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
+    m_ArmMotorRight.SetIdleMode(SparkBase::IdleMode::kCoast);
+    m_ArmMotorLeft.SetIdleMode(SparkBase::IdleMode::kCoast);
+    m_WristMotor.SetIdleMode(SparkBase::IdleMode::kCoast);
 }
 
 void Arm::SetArmPosition (arm_position_t DesiredPosition)
@@ -368,14 +383,14 @@ void Arm::updateArm()
     m_ArmMotorLeft.Set( 0 );
     m_ArmMotorRight.Set( 0 );
    #else
-    m_pidControllerLeft.SetReference(ArmAngle, rev::CANSparkMax::ControlType::kSmartMotion);
-    m_pidControllerRight.SetReference(ArmAngle, rev::CANSparkMax::ControlType::kSmartMotion);
+    m_pidControllerLeft.SetReference(ArmAngle, CANSparkMax::ControlType::kSmartMotion);
+    m_pidControllerRight.SetReference(ArmAngle, CANSparkMax::ControlType::kSmartMotion);
    #endif
 
    #if DBG_DISABLE_WRIST_MOTORS
     m_WristMotor.Set( 0 );
    #elif WRIST_USE_MOTOR_ENCODER
-    m_WristPidController.SetReference(WristAngle, rev::CANSparkMax::ControlType::kSmartMotion);
+    m_WristPidController.SetReference(WristAngle, CANSparkMax::ControlType::kSmartMotion);
    #else
 
     m_WristControlOutput = m_WristPIDController.Calculate(

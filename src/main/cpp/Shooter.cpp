@@ -113,7 +113,7 @@ void Shooter::updateShooter( )
         }
         else
         {
-            m_shooterPid.SetReference( m_maxShooterSpeed, rev::CANSparkBase::ControlType::kVelocity );
+            m_shooterPid.SetReference( m_maxShooterSpeed, SparkBase::ControlType::kVelocity );
         }
     }
     else

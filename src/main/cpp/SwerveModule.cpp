@@ -21,8 +21,8 @@ SwerveModule::SwerveModule(
     const double turningEncoderOffset,
     units::meters_per_second_t maxSpeed
 )
-    : m_driveMotor(driveMotorChannel,rev::CANSparkLowLevel::MotorType::kBrushless),
-      m_turningMotor(turningMotorChannel,rev::CANSparkLowLevel::MotorType::kBrushless),
+    : m_driveMotor(driveMotorChannel,SparkLowLevel::MotorType::kBrushless),
+      m_turningMotor(turningMotorChannel,SparkLowLevel::MotorType::kBrushless),
       m_turningEncoder(turningEncoderChannel) 
 {
 
@@ -38,8 +38,8 @@ SwerveModule::SwerveModule(
 
   m_drivechannel=driveMotorChannel;
   //m_encodername=fmt::sprintf("turnencoder %d",m_drivechannel);
-    m_driveMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kBrake);
-    m_turningMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kBrake);
+    m_driveMotor.SetIdleMode(SparkBase::IdleMode::kBrake);
+    m_turningMotor.SetIdleMode(SparkBase::IdleMode::kBrake);
     m_driveMotor.EnableVoltageCompensation(12.0);
     m_turningMotor.EnableVoltageCompensation(12.0);
 

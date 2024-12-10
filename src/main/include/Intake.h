@@ -25,7 +25,7 @@ class Intake{
     void UpdateSmartDashboardData();
 
   private:
-    rev::CANSparkMax m_IntakeMotor { ConstantCrap::kIntakeMotorcanID,rev::CANSparkLowLevel::MotorType::kBrushless };
+    CANSparkMax m_IntakeMotor { ConstantCrap::kIntakeMotorcanID,CANSparkLowLevel::MotorType::kBrushless };
     frc::AnalogInput m_RingDetector{GetAnalogChannelFromPin(0)};
     intake_movement_t m_intake_movement;
 

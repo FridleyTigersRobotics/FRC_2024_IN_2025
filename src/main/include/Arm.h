@@ -1,6 +1,7 @@
 #pragma once
 
 #include <rev/SparkMax.h>
+using namespace rev::spark;
 #include <Constants.h>
 #include <frc/DutyCycleEncoder.h>
 #include <frc/controller/ProfiledPIDController.h>
@@ -65,26 +66,26 @@ private:
     double m_startWristAngle;
 
     // Arm
-    rev::SparkMax      m_ArmMotorLeft  { ConstantCrap::kArmMotorLeftcanID,  rev::SparkLowLevel::MotorType::kBrushless };
-    rev::SparkMax      m_ArmMotorRight { ConstantCrap::kArmMotorRightcanID, rev::SparkLowLevel::MotorType::kBrushless };
-    
-    rev::SparkPIDController m_pidControllerLeft  = m_ArmMotorLeft.GetPIDController();
-    rev::SparkPIDController m_pidControllerRight = m_ArmMotorRight.GetPIDController();
+    SparkMax      m_ArmMotorLeft  { ConstantCrap::kArmMotorLeftcanID,  SparkLowLevel::MotorType::kBrushless };
+    SparkMax      m_ArmMotorRight { ConstantCrap::kArmMotorRightcanID, SparkLowLevel::MotorType::kBrushless };
+
+    SparkClosedLoopController m_pidControllerLeft  = m_ArmMotorLeft.GetClosedLoopController();
+    SparkClosedLoopController m_pidControllerRight = m_ArmMotorRight.GetClosedLoopController();
 
 
 
 
-    rev::SparkRelativeEncoder m_ArmMotorLeftEncoder  { m_ArmMotorLeft.GetEncoder(rev::SparkRelativeEncoder::Type::kHallSensor) };
-    rev::SparkRelativeEncoder m_ArmMotorRightEncoder { m_ArmMotorRight.GetEncoder(rev::SparkRelativeEncoder::Type::kHallSensor) };
+    SparkRelativeEncoder m_ArmMotorLeftEncoder  { m_ArmMotorLeft.SparkBase::GetEncoder() };
+    SparkRelativeEncoder m_ArmMotorRightEncoder { m_ArmMotorRight.SparkBase::GetEncoder() };
 
     
     frc::DutyCycleEncoder m_ArmEncoder    { ConstantCrap::kArmEncoderDIO };
 
     // Wrist
-    rev::SparkMax      m_WristMotor   { ConstantCrap::kWristMotorID, rev::SparkLowLevel::MotorType::kBrushless };
+    SparkMax      m_WristMotor   { ConstantCrap::kWristMotorID, SparkLowLevel::MotorType::kBrushless };
     frc::DutyCycleEncoder m_WristEncoder { ConstantCrap::kWristEncoderDIO };
-    rev::SparkRelativeEncoder m_WristMotorEncoder  { m_WristMotor.GetEncoder(rev::SparkRelativeEncoder::Type::kHallSensor) };
-    rev::SparkPIDController m_WristPidController  = m_WristMotor.GetPIDController();
+    SparkRelativeEncoder m_WristMotorEncoder  { m_WristMotor.SparkBase::GetEncoder() };
+    SparkClosedLoopController m_WristPidController  = m_WristMotor.GetClosedLoopController();
 
     double m_WristEncoderOffset = 0.0;
 

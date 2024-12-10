@@ -19,9 +19,9 @@ public:
     bool shooterReadyToShoot();
 
 private:
-    rev::CANSparkMax          m_shooterMotor   { ConstantCrap::kShooterMotorID, rev::CANSparkLowLevel::MotorType::kBrushless };
-    rev::SparkPIDController   m_shooterPid     { m_shooterMotor.GetPIDController() };
-    rev::SparkRelativeEncoder m_shooterEncoder { m_shooterMotor.GetEncoder(rev::SparkRelativeEncoder::Type::kHallSensor, 42) };
+    CANSparkMax          m_shooterMotor   { ConstantCrap::kShooterMotorID, CANSparkLowLevel::MotorType::kBrushless };
+    SparkPIDController   m_shooterPid     { m_shooterMotor.GetPIDController() };
+    SparkRelativeEncoder m_shooterEncoder { m_shooterMotor.GetEncoder(SparkRelativeEncoder::Type::kHallSensor, 42) };
 
 
     // default PID coefficients
