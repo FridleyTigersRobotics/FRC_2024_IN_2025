@@ -3,14 +3,14 @@
 namespace ConstantCrap
 {
     // Can IDs
-    constexpr int kFrontLeftSpinID      = 17;
-    constexpr int kFrontLeftDriveID     = 16;
-    constexpr int kBackLeftSpinID       = 15;
-    constexpr int kBackLeftDriveID      = 14;
+    constexpr int kFrontLeftSpinID      = 11;
+    constexpr int kFrontLeftDriveID     = 10;
+    constexpr int kBackLeftSpinID       = 17;
+    constexpr int kBackLeftDriveID      = 16;
     constexpr int kFrontRightSpinID     = 13;
     constexpr int kFrontRightDriveID    = 12;
-    constexpr int kBackRightSpinID      = 11;
-    constexpr int kBackRightDriveID     = 10;
+    constexpr int kBackRightSpinID      = 15;
+    constexpr int kBackRightDriveID     = 14;
 
     // TODO : Check all these, wrist an motor both 18?
     constexpr int kIntakeMotorcanID     = 22;

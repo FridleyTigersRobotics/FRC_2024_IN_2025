@@ -5,7 +5,7 @@
 #include <frc/XboxController.h>
 #include <fmt/printf.h>
 #include <frc/filter/SlewRateLimiter.h>
-#include <Shooter.h>
+
 #include "Drivetrain.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <string>

@@ -4,11 +4,10 @@
 #include <frc/XboxController.h>
 #include <fmt/printf.h>
 #include <frc/filter/SlewRateLimiter.h>
-#include <Shooter.h>
+
 #include <Drivetrain.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <string>
-#include <Arm.h>
 #include <Climber.h>
 #include <networktables/NetworkTable.h>
 #include <LimelightHelpers.h>
@@ -98,9 +97,9 @@ std::string Robot::TranslateAutoModeToAutoString( uint32_t autoModeInt ) {
     m_autoState     = 0;
 
     Drivetrain_Stop();
-    m_Arm.SetArmPosition( m_Arm.HOLD_START_POSITION );
-    m_Intake.ChangeIntakeState( m_Intake.Intake_Stopped );
-    m_Shooter.changeShooterState( false );
+   
+   
+   
     m_Climber.ChangeClimberState( m_Climber.ClimberStop );
     
 
@@ -124,10 +123,10 @@ std::string Robot::TranslateAutoModeToAutoString( uint32_t autoModeInt ) {
     RunAutoSequence();
     
     m_Drivetrain.updateDrivetrain( GetPeriod(), m_fieldRelative );
-    m_Arm.updateArm();
+    
     m_Climber.updateClimber();
-    m_Shooter.updateShooter();
-    m_Intake.updateIntake();
+    
+   
     
   }
 
@@ -214,18 +213,18 @@ void Robot::Drivetrain_Stop() {
 
 void Robot::MoveArmForPickup()
 {
-  m_Arm.SetArmPosition( m_Arm.GROUND_PICKUP );
-  m_Intake.ChangeIntakeState( m_Intake.Intake_IntakingWithSensor );
+ 
+ 
   m_autoStateDone = true;
 }
 
 void Robot::MoveArmForShooting()
 {
-  m_Arm.SetArmPosition( m_Arm.SPEAKER );
+ 
 
   if ( m_autoTimer.Get() > 1.0_s )
   {
-    m_Intake.ChangeIntakeState( m_Intake.Intake_Stopped );
+    
     m_autoStateDone = true;
   }
 }
@@ -234,14 +233,13 @@ void Robot::MoveArmForShooting()
 
 void Robot::AimAndPrepShoot( units::second_t maxTime )
 {
-  m_Arm.SetArmPosition( m_Arm.SPEAKER );
+  
   //Drive for distance using the limlight aiming. We can use the same thing as we do in tele-op?
   //Yoink the variables from teleop in robot? hmm...
-  m_Intake.ChangeIntakeState( m_Intake.Intake_Stopped );
-  m_Shooter.changeShooterState( true );
+  
+  
 
-  if ( ( m_Arm.ArmReadyForShooting() && m_Shooter.shooterReadyToShoot() ) ||
-       m_autoTimer.Get() > maxTime )
+
   {
     m_autoStateDone = true;
   }
@@ -256,11 +254,11 @@ void Robot::AimAndPrepShoot( units::second_t maxTime )
 
 void Robot::Shoot( units::second_t maxTime )
 {
-  m_Intake.ChangeIntakeState( m_Intake.Intake_Outtaking );
+ 
 
   if ( m_autoTimer.Get() > maxTime )
   {
-    m_Intake.ChangeIntakeState( m_Intake.Intake_Stopped );
+   
     m_autoStateDone = true;
   }
 }

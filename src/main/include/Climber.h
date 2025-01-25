@@ -53,29 +53,7 @@ class Climber
 
     static constexpr double kMaxClimberHeight = 2.9e5;
 
-  #if CLIMBER_ENCODER_SYNC_ENABLED
-    double m_ClimberPosition = 0.0;
-
-    // Number of encoder counts to change climber position each update.
-    double kCLimberSpeed = 1000.0;
-    double kAngleToEncoderCounts = 0.0;
-
-    double m_ClimberLMaxOutputValue = 1.000;               
-    double m_ClimberLP              = 0.00015;  
-
-    frc::PIDController m_ClimberLeftPidController{
-      m_ClimberLP,
-      0.0,
-      0.0};
-
-    double m_ClimberRMaxOutputValue = 1.000;               
-    double m_ClimberRP              = 0.00015;  
-
-    frc::PIDController m_ClimberRightPidController{
-      m_ClimberRP,
-      0.0,
-      0.0};
-  #endif
+  
 
 
 };

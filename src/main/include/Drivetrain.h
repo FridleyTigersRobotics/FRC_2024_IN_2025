@@ -63,7 +63,7 @@ class Drivetrain {
    units::radians_per_second_t m_rot   { 0.0 };
 
    //-----------|Front|------------
-  //  16----------------------12
+  //  10----------------------12
   //  |----YAY CODE TEAM!------|
   //  |------------------------|
   //  |------------------------|
@@ -73,15 +73,15 @@ class Drivetrain {
   //  |----Kewsar is smart-----|
   //  |----Hail Bing Skrong----|
   //  |-Bing Skrong is strong--|
-  //  14----------------------10
+  //  16----------------------14
   //------------|back|-------------
   /// 32 in diagonal
   // 22.627417
   //11.3137085
-  frc::Translation2d m_frontLeftLocation {+0.287_m, +0.287_m};
-  frc::Translation2d m_frontRightLocation{+0.287_m, -0.287_m};
-  frc::Translation2d m_backLeftLocation  {-0.287_m, +0.287_m};
-  frc::Translation2d m_backRightLocation {-0.287_m, -0.287_m};
+  frc::Translation2d m_frontLeftLocation {+0.28575_m, +0.28575_m};
+  frc::Translation2d m_frontRightLocation{+0.28575_m, -0.28575_m};
+  frc::Translation2d m_backLeftLocation  {-0.28575_m, +0.28575_m};
+  frc::Translation2d m_backRightLocation {-0.28575_m, -0.28575_m};
 
 //1.230863 Drive motor #10
 //0.909437 Drive motor #12
