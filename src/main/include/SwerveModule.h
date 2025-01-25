@@ -3,6 +3,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
+#include <rev/SparkMax.h>
 using namespace rev::spark;
 #include <numbers>
 #include <frc/AnalogEncoder.h>
@@ -18,6 +19,36 @@ using namespace rev::spark;
 #include <units/velocity.h>
 #include <units/voltage.h>
 #include <rev/sparkmax.h>
+
+
+class OldAnalogEncoder : 
+  frc::AnalogEncoder
+{
+    using frc::AnalogEncoder::AnalogEncoder;
+
+  public:
+    double GetDistance( void ) const
+    {
+      return Get();
+    }
+
+    void SetDistancePerRotation( double distPerRot )
+    {
+      
+    }
+
+    void SetPositionOffset( double posOffset )
+    {
+      
+    }
+
+};
+
+
+
+
+
+
 
 class SwerveModule {
  public:
@@ -53,8 +84,8 @@ class SwerveModule {
   std::string m_encodername;
 
 
-  SparkRelativeEncoder m_driveEncoder = m_driveMotor.GetEncoder(SparkRelativeEncoder::Type::kHallSensor);
-  frc::AnalogEncoder m_turningEncoder;
+  SparkRelativeEncoder m_driveEncoder = m_driveMotor.GetEncoder();
+  OldAnalogEncoder m_turningEncoder;
 //Line fourty-nine??? That's CRAZY
   frc::ProfiledPIDController<units::radians> m_turningPIDController{
       1.0,

@@ -10,7 +10,7 @@
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
-#include <AHRS.h>
+#include <studica/AHRS.h>
 #include "SwerveModule.h"
 #include "Constants.h"
 #include "frc/geometry/Rotation2d.h"
@@ -94,7 +94,7 @@ class Drivetrain {
   SwerveModule m_backLeft  { kBackLeftDriveID,   kBackLeftSpinID,   kDriveEncoderBackLeft,   0.255626 / (2*std::numbers::pi),       kMaxSpeed };
   SwerveModule m_frontLeft { kFrontLeftDriveID,  kFrontLeftSpinID,  kDriveEncoderFrontLeft,  4.980153 / (2*std::numbers::pi),       kMaxSpeed };
 
-  AHRS m_imu { frc::SPI::Port::kMXP };
+  studica::AHRS m_imu { studica::AHRS::NavXComType::kI2C };
 
   frc::SwerveDriveKinematics<4> m_kinematics{
       m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation,

@@ -11,6 +11,9 @@
 #include <fmt/printf.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
+#include <rev/config/SparkMaxConfig.h>
+using namespace rev::spark;
+
 #define BURN_FLASH           ( 0 ) 
 #define SMART_CURRENT_LIMITS ( 1 )
 
@@ -25,6 +28,9 @@ SwerveModule::SwerveModule(
       m_turningMotor(turningMotorChannel,SparkLowLevel::MotorType::kBrushless),
       m_turningEncoder(turningEncoderChannel) 
 {
+    SparkMaxConfig configDrive{};
+    SparkMaxConfig configTurn{};
+
 
   m_maxSpeed = maxSpeed;
   // Set the distance per pulse for the drive encoder. We can simply use the
@@ -33,18 +39,18 @@ SwerveModule::SwerveModule(
   m_driveEncoder.SetPosition(0); 
   double positonConversionFactor = 3.9*std::numbers::pi/8.14*0.0254;
   m_PositionConversionFactor = positonConversionFactor;
-  m_driveEncoder.SetPositionConversionFactor(positonConversionFactor);
-  m_driveEncoder.SetVelocityConversionFactor((1.0/60.0) * positonConversionFactor);
+  //m_driveEncoder.SetPositionConversionFactor(positonConversionFactor);
+  //m_driveEncoder.SetVelocityConversionFactor((1.0/60.0) * positonConversionFactor);
 
   m_drivechannel=driveMotorChannel;
   //m_encodername=fmt::sprintf("turnencoder %d",m_drivechannel);
-    m_driveMotor.SetIdleMode(SparkBase::IdleMode::kBrake);
-    m_turningMotor.SetIdleMode(SparkBase::IdleMode::kBrake);
-    m_driveMotor.EnableVoltageCompensation(12.0);
-    m_turningMotor.EnableVoltageCompensation(12.0);
+    //m_driveMotor.SetIdleMode(SparkBase::IdleMode::kBrake);
+    //m_turningMotor.SetIdleMode(SparkBase::IdleMode::kBrake);
+    //m_driveMotor.EnableVoltageCompensation(12.0);
+    //m_turningMotor.EnableVoltageCompensation(12.0);
 
-  m_driveMotor.SetSmartCurrentLimit(30, 60);
-  m_turningMotor.SetSmartCurrentLimit(20);
+  //m_driveMotor.SetSmartCurrentLimit(30, 60);
+  //m_turningMotor.SetSmartCurrentLimit(20);
 
   // Set the distance (in this case, angle) per pulse for the turning encoder.
   // This is the the angle through an entire rotation (2 * std::numbers::pi)
@@ -56,6 +62,31 @@ SwerveModule::SwerveModule(
   // to be continuous.
   m_turningPIDController.EnableContinuousInput(
       -units::radian_t{std::numbers::pi}, units::radian_t{std::numbers::pi});
+
+
+
+    configDrive
+        .Inverted(false)
+        .SetIdleMode(SparkMaxConfig::IdleMode::kBrake)
+        .VoltageCompensation(12.0)
+        .SmartCurrentLimit(20);
+    configDrive.encoder
+        .PositionConversionFactor( positonConversionFactor )
+        .VelocityConversionFactor( (1.0/60.0) * positonConversionFactor );
+
+
+    configTurn
+        .Inverted(false)
+        .SetIdleMode(SparkMaxConfig::IdleMode::kBrake)
+        .VoltageCompensation(12.0)
+        .SmartCurrentLimit(30, 60);
+    configTurn.encoder
+        .PositionConversionFactor( positonConversionFactor )
+        .VelocityConversionFactor( (1.0/60.0) * positonConversionFactor );
+
+    m_driveMotor  .Configure(configDrive, SparkMax::ResetMode::kResetSafeParameters, SparkMax::PersistMode::kPersistParameters);
+    m_turningMotor.Configure(configTurn,  SparkMax::ResetMode::kResetSafeParameters, SparkMax::PersistMode::kPersistParameters);
+
 
 #if BURN_FLASH
   m_driveMotor.BurnFlash();

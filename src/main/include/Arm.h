@@ -75,8 +75,8 @@ private:
 
 
 
-    SparkRelativeEncoder m_ArmMotorLeftEncoder  { m_ArmMotorLeft.SparkBase::GetEncoder() };
-    SparkRelativeEncoder m_ArmMotorRightEncoder { m_ArmMotorRight.SparkBase::GetEncoder() };
+    SparkRelativeEncoder m_ArmMotorLeftEncoder  { m_ArmMotorLeft.GetEncoder() };
+    SparkRelativeEncoder m_ArmMotorRightEncoder { m_ArmMotorRight.GetEncoder() };
 
     
     frc::DutyCycleEncoder m_ArmEncoder    { ConstantCrap::kArmEncoderDIO };

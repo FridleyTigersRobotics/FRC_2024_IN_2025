@@ -16,6 +16,7 @@
 #include <units/angular_velocity.h>
 #include <units/time.h>
 #include <units/velocity.h>
+#include <units/acceleration.h>
 #include <units/voltage.h>
 #include "units/angular_acceleration.h"
 

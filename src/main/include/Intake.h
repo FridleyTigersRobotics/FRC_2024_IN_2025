@@ -7,6 +7,9 @@
 #include <frc/DigitalInput.h>
 #include <Utilities.h>
 
+#include <rev/SparkMax.h>
+using namespace rev::spark;
+
 class Intake{
  public:
     typedef enum intake_movement
@@ -25,7 +28,7 @@ class Intake{
     void UpdateSmartDashboardData();
 
   private:
-    CANSparkMax m_IntakeMotor { ConstantCrap::kIntakeMotorcanID,CANSparkLowLevel::MotorType::kBrushless };
+    SparkMax m_IntakeMotor { ConstantCrap::kIntakeMotorcanID, SparkLowLevel::MotorType::kBrushless };
     frc::AnalogInput m_RingDetector{GetAnalogChannelFromPin(0)};
     intake_movement_t m_intake_movement;
 

@@ -3,20 +3,41 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <fmt/printf.h>
 
+#include <rev/config/SparkMaxConfig.h>
+using namespace rev::spark;
+
 Shooter::Shooter()
 {
-    m_shooterMotor.RestoreFactoryDefaults();
-    m_shooterMotor.SetInverted( true );
-    m_shooterPid.SetP(kP);
-    m_shooterPid.SetI(kI);
-    m_shooterPid.SetD(kD);
-    m_shooterPid.SetIZone(kIz);
-    m_shooterPid.SetFF(kFF);
-    m_shooterPid.SetOutputRange(kMinOutput, kMaxOutput);
-    m_shooterPid.SetSmartMotionMaxVelocity(kMaxVel);
-    m_shooterPid.SetSmartMotionMinOutputVelocity(kMinVel);
-    m_shooterPid.SetSmartMotionMaxAccel(kMaxAcc);
-    m_shooterPid.SetSmartMotionAllowedClosedLoopError(kAllErr);
+    // m_shooterMotor.RestoreFactoryDefaults();
+    // m_shooterMotor.SetInverted( true );
+    // m_shooterPid.SetP(kP);
+    // m_shooterPid.SetI(kI);
+    // m_shooterPid.SetD(kD);
+    // m_shooterPid.SetIZone(kIz);
+    // m_shooterPid.SetFF(kFF);
+
+    //m_shooterPid.SetOutputRange(kMinOutput, kMaxOutput);
+    //m_shooterPid.SetSmartMotionMaxVelocity(kMaxVel);
+    //m_shooterPid.SetSmartMotionMinOutputVelocity(kMinVel);
+    //m_shooterPid.SetSmartMotionMaxAccel(kMaxAcc);
+    //m_shooterPid.SetSmartMotionAllowedClosedLoopError(kAllErr);
+
+    SparkMaxConfig configShooter{};
+
+    configShooter
+        .Inverted(true)
+        .SetIdleMode(SparkMaxConfig::IdleMode::kCoast);
+    // configShooter.encoder
+    //     .PositionConversionFactor( PositionConversionFactor )
+    //     .VelocityConversionFactor( VelocityConversionFactor );
+    configShooter.closedLoop
+        .SetFeedbackSensor(ClosedLoopConfig::FeedbackSensor::kPrimaryEncoder)
+        .Pid(kP, kI, kD)
+        .VelocityFF(kFF)
+        .IZone(kIz);
+
+
+
 }
 
 void Shooter::initShooter()

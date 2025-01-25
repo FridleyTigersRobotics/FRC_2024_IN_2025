@@ -1,10 +1,16 @@
 #include <Debug.h>
 #include <Intake.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <rev/SparkMax.h>
+#include <rev/config/SparkMaxConfig.h>
+using namespace rev::spark;
+
 
 Intake::Intake()
 {
-    m_IntakeMotor.SetSmartCurrentLimit(20, 35);
+    SparkMaxConfig config{};
+    config.SmartCurrentLimit(20, 35);
+    m_IntakeMotor.Configure(config, SparkMax::ResetMode::kNoResetSafeParameters, SparkMax::PersistMode::kNoPersistParameters);
 }
 
  

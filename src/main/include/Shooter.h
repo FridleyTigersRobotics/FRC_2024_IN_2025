@@ -1,6 +1,7 @@
 #pragma once
 
-#include "rev/SparkMax.h"
+#include <rev/SparkMax.h>
+using namespace rev::spark;
 #include <Constants.h>
 #include <frc/filter/SlewRateLimiter.h>
 #include <units/math.h>
@@ -19,9 +20,9 @@ public:
     bool shooterReadyToShoot();
 
 private:
-    CANSparkMax          m_shooterMotor   { ConstantCrap::kShooterMotorID, CANSparkLowLevel::MotorType::kBrushless };
-    SparkPIDController   m_shooterPid     { m_shooterMotor.GetPIDController() };
-    SparkRelativeEncoder m_shooterEncoder { m_shooterMotor.GetEncoder(SparkRelativeEncoder::Type::kHallSensor, 42) };
+    SparkMax                  m_shooterMotor   { ConstantCrap::kShooterMotorID, SparkLowLevel::MotorType::kBrushless };
+    SparkClosedLoopController m_shooterPid     { m_shooterMotor.GetClosedLoopController() };
+    SparkRelativeEncoder      m_shooterEncoder { m_shooterMotor.GetEncoder() };
 
 
     // default PID coefficients

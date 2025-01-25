@@ -1,6 +1,8 @@
 #include <Debug.h>
 #include <Arm.h>
-#include <rev/sparkmax.h>
+#include <rev/SparkMax.h>
+#include <rev/config/SparkMaxConfig.h>
+using namespace rev::spark;
 #include <frc/smartdashboard/SmartDashboard.h>
 //#include <arms> *flexes, cutely*
 
@@ -14,6 +16,9 @@
 
 Arm::Arm()
 {
+    double PositionConversionFactor = 1.0 / ( 20.0 * ( 74.0 / 14.0 ) );
+    double VelocityConversionFactor = 1.0 / ( 60 * 20.0 * ( 74.0 / 14.0 ) );
+
     //m_ArmMotorRight.SetInverted( false );
     //m_ArmMotorLeft.SetInverted( true );
     //m_WristMotor.SetInverted( true );
@@ -37,21 +42,6 @@ Arm::Arm()
     // m_pidControllerLeft.SetSmartMotionMaxAccel(kMaxAcc);
     // m_pidControllerLeft.SetSmartMotionAllowedClosedLoopError(kAllErr);
 
-    SparkMax m_max{1, SparkMax::MotorType::kBrushless};
-    SparkMaxConfig config{};
-
-    config
-        .Inverted(false)
-        .SetIdleMode(SparkMaxConfig::IdleMode::kBrake);
-    config.encoder
-        .PositionConversionFactor(  1.0 / ( 20.0 * ( 74.0 / 14.0 ) ) )
-        .VelocityConversionFactor(  1.0 / ( 60 * 20.0 * ( 74.0 / 14.0 ) ) );
-    config.closedLoop
-        .SetFeedbackSensor(ClosedLoopConfig::FeedbackSensor::kPrimaryEncoder)
-        .Pid(kP, kI, kD);
-
-    m_max.Configure(config, SparkMax::ResetMode::kResetSafeParameters, SparkMax::PersistMode::kPersistParameters)
-
 
     // m_pidControllerRight.SetP(kP);
     // m_pidControllerRight.SetI(kI);
@@ -63,6 +53,49 @@ Arm::Arm()
     // m_pidControllerRight.SetSmartMotionMinOutputVelocity(kMinVel);
     // m_pidControllerRight.SetSmartMotionMaxAccel(kMaxAcc);
     // m_pidControllerRight.SetSmartMotionAllowedClosedLoopError(kAllErr);
+
+
+
+    //SparkMax m_max{1, SparkMax::MotorType::kBrushless};
+    SparkMaxConfig configArmLeft{};
+    SparkMaxConfig configArmRight{};
+    SparkMaxConfig configWrist{};
+
+    configArmLeft
+        .Inverted(false)
+        .SetIdleMode(SparkMaxConfig::IdleMode::kBrake);
+    configArmLeft.encoder
+        .PositionConversionFactor( PositionConversionFactor )
+        .VelocityConversionFactor( VelocityConversionFactor );
+    configArmLeft.closedLoop
+        .SetFeedbackSensor(ClosedLoopConfig::FeedbackSensor::kPrimaryEncoder)
+        .Pid(kP, kI, kD)
+        .VelocityFF(kFF)
+        .IZone(kIz);
+
+    configArmRight
+        .Inverted(false)
+        .SetIdleMode(SparkMaxConfig::IdleMode::kBrake);
+    configArmRight.encoder
+        .PositionConversionFactor( PositionConversionFactor )
+        .VelocityConversionFactor( VelocityConversionFactor );
+    configArmRight.closedLoop
+        .SetFeedbackSensor(ClosedLoopConfig::FeedbackSensor::kPrimaryEncoder)
+        .Pid(kP, kI, kD)
+        .VelocityFF(kFF)
+        .IZone(kIz);
+
+
+    configWrist
+        .Inverted(true)
+        .SetIdleMode(SparkMaxConfig::IdleMode::kBrake)
+        .SmartCurrentLimit(20, 40);
+
+
+    m_ArmMotorLeft .Configure(configArmLeft,  SparkMax::ResetMode::kResetSafeParameters, SparkMax::PersistMode::kPersistParameters);
+    m_ArmMotorRight.Configure(configArmRight, SparkMax::ResetMode::kResetSafeParameters, SparkMax::PersistMode::kPersistParameters);
+    m_WristMotor   .Configure(configWrist,    SparkMax::ResetMode::kResetSafeParameters, SparkMax::PersistMode::kPersistParameters);
+
 
     // 44 / 18 sprockets
   #if WRIST_USE_MOTOR_ENCODER
@@ -130,20 +163,33 @@ Arm::Arm()
 
 void Arm::initArm()
 {
-    m_ArmMotorRight.SetIdleMode(SparkBase::IdleMode::kBrake);
-    m_ArmMotorLeft.SetIdleMode(SparkBase::IdleMode::kBrake);
-    m_WristMotor.SetIdleMode(SparkBase::IdleMode::kBrake);
     m_ArmPosition     = arm_position_t::HOLD_START_POSITION;
     m_PrevArmPosition = arm_position_t::HOLD_START_POSITION;
-    m_ArmMotorLeftEncoder.SetPosition(  m_ArmEncoder.GetAbsolutePosition() );
-    m_ArmMotorRightEncoder.SetPosition( m_ArmEncoder.GetAbsolutePosition() );
-    m_WristMotorEncoder.SetPosition( m_WristEncoder.GetAbsolutePosition() );
+    m_ArmMotorLeftEncoder.SetPosition(  m_ArmEncoder.Get() );
+    m_ArmMotorRightEncoder.SetPosition( m_ArmEncoder.Get() );
+    m_WristMotorEncoder.SetPosition( m_WristEncoder.Get() );
+
+    SparkMaxConfig configArmLeft{};
+    SparkMaxConfig configArmRight{};
+    SparkMaxConfig configWrist{};
+
+    configArmLeft.SetIdleMode(SparkMaxConfig::IdleMode::kBrake);
+    m_ArmMotorLeft.Configure(configArmLeft, SparkMax::ResetMode::kNoResetSafeParameters, SparkMax::PersistMode::kNoPersistParameters);
+
+    configArmRight.SetIdleMode(SparkMaxConfig::IdleMode::kBrake);
+    m_ArmMotorRight.Configure(configArmRight, SparkMax::ResetMode::kNoResetSafeParameters, SparkMax::PersistMode::kNoPersistParameters);
+
+    configWrist.SetIdleMode(SparkMaxConfig::IdleMode::kBrake);
+    m_WristMotor.Configure(configWrist, SparkMax::ResetMode::kNoResetSafeParameters, SparkMax::PersistMode::kNoPersistParameters);
+
+
+
 
 
 
    #if WRIST_DISTANCE_FIX_0
     // Need to assume wrist is rotated outwards over the top
-    if ( m_WristEncoder.GetAbsolutePosition() < 0.4 )
+    if ( m_WristEncoder.Get() < 0.4 )
     {
         m_WristEncoderOffset = 1.0;
     }
@@ -153,7 +199,7 @@ void Arm::initArm()
     }
    #endif
  
-    m_startArmAngle   = m_ArmEncoder.GetAbsolutePosition();
+    m_startArmAngle   = m_ArmEncoder.Get();
     m_startWristAngle = getWristEncoderValue();
 
 
@@ -169,16 +215,25 @@ void Arm::ResetWristEncoder()
 
 double Arm::getWristEncoderValue()
 {
-    return m_WristEncoderOffset + m_WristEncoder.GetDistance();
+    return m_WristEncoderOffset + m_WristEncoder.Get();
 }
 
 
 void Arm::disableArm()
 {
     // Nice to be able to move the arm/wrist, but will slam down when disabled....
-    m_ArmMotorRight.SetIdleMode(SparkBase::IdleMode::kCoast);
-    m_ArmMotorLeft.SetIdleMode(SparkBase::IdleMode::kCoast);
-    m_WristMotor.SetIdleMode(SparkBase::IdleMode::kCoast);
+    SparkMaxConfig configArmLeft{};
+    SparkMaxConfig configArmRight{};
+    SparkMaxConfig configWrist{};
+
+    configArmLeft.SetIdleMode(SparkMaxConfig::IdleMode::kCoast);
+    m_ArmMotorLeft.Configure(configArmLeft, SparkMax::ResetMode::kNoResetSafeParameters, SparkMax::PersistMode::kNoPersistParameters);
+
+    configArmRight.SetIdleMode(SparkMaxConfig::IdleMode::kCoast);
+    m_ArmMotorRight.Configure(configArmRight, SparkMax::ResetMode::kNoResetSafeParameters, SparkMax::PersistMode::kNoPersistParameters);
+
+    configWrist.SetIdleMode(SparkMaxConfig::IdleMode::kCoast);
+    m_WristMotor.Configure(configWrist, SparkMax::ResetMode::kNoResetSafeParameters, SparkMax::PersistMode::kNoPersistParameters);
 }
 
 void Arm::SetArmPosition (arm_position_t DesiredPosition)
@@ -200,13 +255,13 @@ bool Arm::ArmReadyForGroundIntake()
 bool Arm::ArmReadyForMoveForwardPreClimb()
 {
     return ( m_ArmPosition == TRAP &&
-            m_ArmEncoder.GetAbsolutePosition() < 0.2 );
+            m_ArmEncoder.Get() < 0.2 );
 }
 
 
 units::meter_t Arm::ArmEndPosition()
 {
-    double armAngleFromStartingConfig = 2.0 * std::numbers::pi * ( m_ArmGroundValue - m_ArmEncoder.GetAbsolutePosition() );
+    double armAngleFromStartingConfig = 2.0 * std::numbers::pi * ( m_ArmGroundValue - m_ArmEncoder.Get() );
     double armAngleFromLevel = double{kArmGroundAngle} + armAngleFromStartingConfig;
     double armEndPosition = cos( double{kArmGroundAngle} ) - cos( double{armAngleFromLevel} );
 
@@ -305,7 +360,7 @@ void Arm::updateArm()
 
     if ( m_ArmPosition != m_PrevArmPosition )
     {
-        m_startArmAngle   = m_ArmEncoder.GetAbsolutePosition();
+        m_startArmAngle   = m_ArmEncoder.Get();
         m_startWristAngle = getWristEncoderValue(); 
     }
 
@@ -331,7 +386,7 @@ void Arm::updateArm()
             ArmAngle = m_ArmSourceValue;
            #if WRIST_COLLIDING_FIX
             // Only move the wrist if it has enough clearance to move.
-            /*if ( m_ArmEncoder.GetAbsolutePosition() > 0.45 )
+            /*if ( m_ArmEncoder.Get() > 0.45 )
             {
                 WristAngle = m_startWristAngle;
             }
@@ -353,7 +408,7 @@ void Arm::updateArm()
             ArmAngle = m_ArmAmpValue;
            #if WRIST_COLLIDING_FIX
             // Only move the wrist if it has enough clearance to move.
-            /*if ( m_ArmEncoder.GetAbsolutePosition() > 0.45 )
+            /*if ( m_ArmEncoder.Get() > 0.45 )
             {
                 WristAngle = m_startWristAngle;
             }
@@ -383,8 +438,8 @@ void Arm::updateArm()
     m_ArmMotorLeft.Set( 0 );
     m_ArmMotorRight.Set( 0 );
    #else
-    m_pidControllerLeft.SetReference(ArmAngle, CANSparkMax::ControlType::kSmartMotion);
-    m_pidControllerRight.SetReference(ArmAngle, CANSparkMax::ControlType::kSmartMotion);
+    m_pidControllerLeft.SetReference(ArmAngle, SparkMax::ControlType::kSmartMotion);
+    m_pidControllerRight.SetReference(ArmAngle, SparkMax::ControlType::kSmartMotion);
    #endif
 
    #if DBG_DISABLE_WRIST_MOTORS
@@ -415,7 +470,7 @@ void Arm::UpdateSmartDashboardData()
     frc::SmartDashboard::PutNumber( "WristEncoderAngle", getWristEncoderValue());
     frc::SmartDashboard::PutNumber( "WristSetpointAngle", m_WristAngle);
     frc::SmartDashboard::PutNumber( "WristControlOutput", m_WristControlOutput);
-    frc::SmartDashboard::PutNumber("Wrist_Encoder_AbsPos",   m_WristEncoder.GetAbsolutePosition());
+    frc::SmartDashboard::PutNumber("Wrist_Encoder_AbsPos",   m_WristEncoder.Get());
     frc::SmartDashboard::PutNumber("Wrist_MotorEncoder_Pos", m_WristMotorEncoder.GetPosition());
 
     //frc::SmartDashboard::PutNumber("Arm_ControlOutputL",   m_ArmMotorLeft.GetAppliedOutput());
@@ -423,8 +478,8 @@ void Arm::UpdateSmartDashboardData()
 
     frc::SmartDashboard::PutNumber("Arm_Angle",           m_ArmAngle);
     //frc::SmartDashboard::PutNumber("Arm_Position",        m_ArmPosition);
-    frc::SmartDashboard::PutNumber("Arm_Encoder_Dist",    m_ArmEncoder.GetDistance());//Ground pickup:0.5099 Top Position 0.1844
-    frc::SmartDashboard::PutNumber("Arm_Encoder_AbsPos",  m_ArmEncoder.GetAbsolutePosition());//Ground pickup:0.5099 Top Position 0.1844
+    frc::SmartDashboard::PutNumber("Arm_Encoder_Dist",    m_ArmEncoder.Get());//Ground pickup:0.5099 Top Position 0.1844
+    frc::SmartDashboard::PutNumber("Arm_Encoder_AbsPos",  m_ArmEncoder.Get());//Ground pickup:0.5099 Top Position 0.1844
     
     frc::SmartDashboard::PutNumber("Arm_NeoPositionL",     m_ArmMotorLeftEncoder.GetPosition());
     frc::SmartDashboard::PutNumber("Arm_NeoPositionR",     m_ArmMotorRightEncoder.GetPosition());
@@ -434,7 +489,7 @@ void Arm::UpdateSmartDashboardData()
 #if 0
     frc::SmartDashboard::PutNumber("Wrist_m_ArmPosition",    m_ArmPosition);    
     frc::SmartDashboard::PutNumber("Wrist_Encoder_Dist",     getWristEncoderValue());
-    frc::SmartDashboard::PutNumber("Wrist_Encoder_AbsPos",   m_WristEncoder.GetAbsolutePosition());
+    frc::SmartDashboard::PutNumber("Wrist_Encoder_AbsPos",   m_WristEncoder.Get());
     frc::SmartDashboard::PutNumber("Wrist_MotorEncoder_Pos", m_WristMotorEncoder.GetPosition());
     frc::SmartDashboard::PutNumber("Wrist_ControlOutput",    m_WristControlOutput);
     frc::SmartDashboard::PutNumber("Wrist_AppliedOutput",    m_WristMotor.GetAppliedOutput());
