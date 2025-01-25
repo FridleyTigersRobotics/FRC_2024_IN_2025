@@ -133,11 +133,118 @@ void Robot::RobotPeriodic()
   void Robot::TeleopPeriodic() 
   { 
 
+  double DriveDeadband = 0.1;
+  double DriveX = frc::ApplyDeadband( -m_driveController.GetLeftY(), DriveDeadband );
+  double DriveY = frc::ApplyDeadband( -m_driveController.GetLeftX(), DriveDeadband );
+
+  double driveRotSpeedUnClamped = -m_DriveRotatePid.Calculate( m_Drivetrain.GetAngle() );
+  double driveRotSpeed          = std::clamp( driveRotSpeedUnClamped, -0.5, 0.5 );
+
+    // Get the x speed. We are inverting this because Xbox controllers return
+    // negative values when we push forward.
+    const auto xSpeed = -m_xspeedLimiter.Calculate( DriveX ) * Drivetrain::kMaxSpeed;
+
+    // Get the y speed or sideways/strafe speed. We are inverting this because
+    // we want a positive value when we pull to the left. Xbox controllers
+    // return positive values when you pull to the right by default.
+    const auto ySpeed = -m_yspeedLimiter.Calculate( DriveY ) * Drivetrain::kMaxSpeed;
+
+    // Get the rate of angular rotation. We are inverting this.
+    const auto rotationSpeed = driveRotSpeed * Drivetrain::kMaxAngularSpeed;
+
+    m_Drivetrain.SetSpeeds( xSpeed, ySpeed, rotationSpeed );
+
+ double targetWrappedAngle  = 0;
+  bool   angleChanged        = false;
+
+  if(m_driveController.GetYButtonPressed())
+  {
+    targetWrappedAngle = 0;
+    angleChanged = true;
+  }
+
+  if (m_driveController.GetBButtonPressed())
+  {
+    targetWrappedAngle = 90;
+    angleChanged = true;
+  }
+
+  if (m_driveController.GetAButtonPressed())
+  {
+    targetWrappedAngle = 180;
+    angleChanged = true;
+  }
+
+  if (m_driveController.GetXButtonPressed())
+  {
+    targetWrappedAngle = -90;
+    angleChanged = true;
+  }
+
+
+
+    double y     = m_driveController.GetRightY();
+  double x     = m_driveController.GetRightX();
+  double mag   = sqrt( x * x + y * y );
+  double angle = ((atan2( x , y ) * 180 / std::numbers::pi) +180) * -1;
+  
+  frc::SmartDashboard::PutNumber( "controler_mag",   mag );
+  frc::SmartDashboard::PutNumber( "controler_angle", angle );
+
+  if( mag > 0.9 )
+  {
+    targetWrappedAngle = angle;
+    angleChanged       = true;
+  }
+
+  if ( angleChanged )
+  {
+    double unwrappedRobotAngle = m_Drivetrain.GetAngle();
+    double wrappedRobotAngle   = m_Drivetrain.GetYaw();
+    double angleDelta = targetWrappedAngle - wrappedRobotAngle;
+    if ( angleDelta > 180 )
+    {
+      angleDelta -= 360;
+    }
+    if ( angleDelta <= -180 )
+    {
+      angleDelta += 360;
+    }
+
+    m_DriveTargetAngle = unwrappedRobotAngle + angleDelta;
+  frc::SmartDashboard::PutNumber( "HEADING_unwrappedRobotAngle",       unwrappedRobotAngle);
+  frc::SmartDashboard::PutNumber( "HEADING_angleDelta",       angleDelta);
+
+  }
+
+
+  double TriggerRotateSpeedMult = 2.0;
+  m_DriveTargetAngle += TriggerRotateSpeedMult * frc::ApplyDeadband( m_driveController.GetRightTriggerAxis(), 0.05 );
+  m_DriveTargetAngle -= TriggerRotateSpeedMult * frc::ApplyDeadband( m_driveController.GetLeftTriggerAxis(),  0.05 );
+
+  if(m_driveController.GetRightBumper())
+  {
+    m_Drivetrain.m_YawOffset -= 3;
+  }
+  else
+  {  
+    if(m_driveController.GetLeftBumper())
+    {
+    m_Drivetrain.m_YawOffset += 3;
+    }
+  }
+
+
+
+  m_DriveRotatePid.SetSetpoint( m_DriveTargetAngle );
+   
+   
+
+
+   
     // Update all subsystems
     m_Drivetrain.updateDrivetrain( GetPeriod(), m_fieldRelative );
-   
-    m_Climber.updateClimber();
-    
+
     
   }
 
