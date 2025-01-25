@@ -29,7 +29,7 @@ void Climber::updateClimber()
 
 void Climber::ChangeClimberState( ClimberState_t ClimberState )
 {
-    m_ClimberState = ClimberState;
+   
 }
 
 

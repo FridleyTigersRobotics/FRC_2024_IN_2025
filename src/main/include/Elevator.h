@@ -13,25 +13,25 @@
 #include "units/angular_acceleration.h"
 
 
-#define Climber_MANUAL_CONTROL       ( 0 )
-#define Climber_ENCODER_SYNC_ENABLED ( 0 )
-#define Climber_ENCODER_SYNC_TRACK_L ( 0 )
-#define Climber_GYRO_ENABLED         ( 0 )
+#define Elevator_MANUAL_CONTROL       ( 0 )
+#define Elevator_ENCODER_SYNC_ENABLED ( 0 )
+#define Elevator_ENCODER_SYNC_TRACK_L ( 0 )
+#define Elevator_GYRO_ENABLED         ( 0 )
 
 
-class Climber
+class Elevator
 {
  public:
-    typedef enum ClimberState_e
+    typedef enum ElevatorState_e
     {
-        ClimberDown,
-        ClimberUp,
-        ClimberStop
-    } ClimberState_t;
+        ElevatorDown,
+        ElevatorUp,
+        ElevatorStop
+    } ElevatorState_t;
 
-    void initClimber();
-    void updateClimber (/*Me when the me when... *Literally combusts* */);
-    void ChangeClimberState( ClimberState_t ClimberState );
+    void initElevator();
+    void updateElevator (/*Me when the me when... *Literally combusts* */);
+    void ChangeElevatorState( ElevatorState_t ElevatorState );
     void manualControl( double speedL, double speedR );
     void UpdateSmartDashboardData();
     void UpdateRoll( double roll );
@@ -39,8 +39,7 @@ class Climber
  private:
    
 
-
-    static constexpr double kMaxClimberHeight = 2.9e5;
+    static constexpr double kMaxElevatorHeight = 2.9e5;
 
   
 
